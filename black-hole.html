@@ -4,114 +4,51 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#050611">
-<meta name="description" content="An interactive animated black hole, built with HTML canvas and JavaScript.">
-<title>Event Horizon — Black Hole Experience</title>
+<meta name="description" content="Explore black holes: how they form, event horizons, spaghettification, types, famous discoveries, and interactive space facts.">
+<title>Event Horizon — Explore Black Holes</title>
 <style>
-:root{color-scheme:dark;--cyan:#7df9ff;--violet:#a78bfa;--muted:#a7abc4}
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:#050611;color:#f7f7ff;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-body{overflow:hidden}
-canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
-.overlay{position:relative;z-index:1;min-height:100svh;padding:clamp(24px,5vw,72px);display:flex;flex-direction:column;justify-content:space-between;pointer-events:none}
-nav,.bottom,.controls,.back{pointer-events:auto}
-nav{display:flex;align-items:center;justify-content:space-between;gap:18px}
-.brand{font:600 12px/1.4 ui-monospace,monospace;letter-spacing:.22em;text-transform:uppercase;color:#e9eaff}
-.pill{border:1px solid #ffffff26;border-radius:999px;padding:9px 13px;color:#c8cbe2;font:11px ui-monospace,monospace;letter-spacing:.1em;background:#090b1c99;backdrop-filter:blur(12px)}
-main{max-width:560px;margin:auto 0; padding:48px 0}
-.kicker{font:11px ui-monospace,monospace;letter-spacing:.28em;color:var(--cyan);text-transform:uppercase}
-h1{font-size:clamp(48px,9vw,108px);line-height:.88;letter-spacing:-.075em;margin:22px 0 26px;font-weight:650}
-h1 span{display:block;background:linear-gradient(100deg,#fff 10%,#b7c7ff 48%,#f6a6ff 85%);background-clip:text;-webkit-background-clip:text;color:transparent}
-p{color:var(--muted);font-size:clamp(14px,1.5vw,17px);line-height:1.8;max-width:420px}
-.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:28px}
-button{cursor:pointer;border:1px solid #ffffff35;border-radius:999px;background:#ffffff0c;color:#fff;padding:12px 17px;font:12px ui-monospace,monospace;letter-spacing:.08em;transition:background .2s,border-color .2s}
-button:hover{background:#7df9ff1a;border-color:#7df9ff99}
-button:focus-visible,a:focus-visible{outline:2px solid var(--cyan);outline-offset:4px}
-.bottom{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;color:#898da9;font:10px ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase}
-.bottom a{color:#cbd0f0;text-decoration:none}
-.hint{color:#777d9c}
-@media(max-width:600px){.overlay{padding:22px}main{margin:auto 0;padding:30px 0}.bottom{font-size:9px}.hint{max-width:130px;text-align:right}}
-@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+:root{color-scheme:dark;--bg:#050611;--panel:rgba(13,16,36,.78);--line:rgba(190,198,255,.17);--cyan:#7df9ff;--violet:#b69aff;--text:#f6f5ff;--muted:#b5bad4}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.65}canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.page{position:relative;z-index:1}.wrap{width:min(1100px,calc(100% - 36px));margin:auto}header{padding:22px 0;border-bottom:1px solid var(--line);background:rgba(5,6,17,.6);backdrop-filter:blur(14px)}nav{display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{font:700 12px ui-monospace,monospace;letter-spacing:.2em}.brand span{color:var(--cyan)}.navlinks{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted)}.hero{min-height:70vh;display:grid;align-items:center;padding:80px 0 65px}.eyebrow{color:var(--cyan);font:700 11px ui-monospace,monospace;letter-spacing:.2em;text-transform:uppercase}.hero h1{font-size:clamp(42px,8vw,86px);line-height:.99;letter-spacing:-.06em;max-width:850px;margin:18px 0}.hero h1 em{font-style:normal;color:var(--cyan);text-shadow:0 0 32px #7df9ff44}.lead{max-width:690px;color:#c5c9e1;font-size:clamp(16px,2vw,19px)}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:999px;padding:11px 17px;background:#10132b;color:var(--text);font-weight:650;font-size:13px;cursor:pointer}.btn.primary{background:var(--cyan);color:#061017;border-color:var(--cyan)}.btn:hover{transform:translateY(-1px);text-decoration:none}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:45px;max-width:750px}.stat,.card,.factbox,.quiz{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(12px)}.stat{padding:17px}.stat strong{display:block;font-size:clamp(20px,3vw,30px);letter-spacing:-.04em}.stat span{color:var(--muted);font-size:12px}.section{padding:64px 0}.section-head{max-width:720px;margin-bottom:26px}.section h2{font-size:clamp(28px,4vw,44px);letter-spacing:-.045em;line-height:1.1;margin:8px 0 12px}.section p{color:#c1c5dc}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.card{padding:23px}.card .num{color:var(--cyan);font:700 12px ui-monospace,monospace;letter-spacing:.12em}.card h3{margin:9px 0 6px;font-size:19px}.card p{margin:0;font-size:14px}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}.factbox{padding:24px}.factbox h3{margin-top:0}.steps{padding-left:20px;color:#c1c5dc}.steps li{padding:0 0 10px}.callout{border-left:2px solid var(--cyan);padding:12px 16px;margin-top:18px;background:#7df9ff0b;color:#d8e7f3}.type-label{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:4px 9px;font-size:11px;color:var(--cyan);margin-bottom:10px}.timeline{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.timeline .card{position:relative}.timeline strong{display:block;font-size:21px;color:var(--cyan)}.quiz{padding:24px}.quiz h3{margin-top:0}.answers{display:flex;gap:10px;flex-wrap:wrap}.answer{background:#151831;border:1px solid var(--line);color:var(--text);border-radius:12px;padding:10px 14px;cursor:pointer}.answer:hover{border-color:var(--cyan)}#quiz-result{min-height:28px;color:var(--cyan);font-weight:650;margin-top:12px}.faq details{border-bottom:1px solid var(--line);padding:15px 0}.faq summary{cursor:pointer;font-weight:650}.faq details p{font-size:14px;margin-bottom:0}footer{padding:28px 0 45px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}.footrow{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}.small{font-size:12px;color:var(--muted)}@media(max-width:760px){.grid,.timeline{grid-template-columns:1fr}.two-col{grid-template-columns:1fr}.hero{min-height:auto;padding:70px 0 45px}.stats{gap:8px}.stat{padding:12px}.navlinks{gap:10px}.section{padding:48px 0}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 </style>
 </head>
 <body>
-<canvas id="space" aria-label="Animated black hole with glowing accretion rings and distant stars"></canvas>
-<div class="overlay">
-<nav><div class="brand">M1RABT / COSMIC LAB</div><div class="pill">SIMULATION 001 · LIVE</div></nav>
+<canvas id="space" aria-hidden="true"></canvas>
+<div class="page">
+<header><div class="wrap"><nav><a class="brand" href="./index.html">M1RABT <span>/ SPACE LAB</span></a><div class="navlinks"><a href="#basics">The basics</a><a href="#anatomy">Anatomy</a><a href="#types">Types</a><a href="#discoveries">Discoveries</a><a href="#quiz">Quiz</a></div></nav></div></header>
 <main>
-<div class="kicker">Beyond the event horizon</div>
-<h1>Nothing<br>escapes<span>gravity.</span></h1>
-<p>A tiny interactive journey into the strange beauty of a black hole. Watch light orbit the darkness, bend around the horizon, and disappear beyond the edge.</p>
-<div class="controls"><button id="toggle" type="button">PAUSE MOTION Ⅱ</button><button id="burst" type="button">PULSE ENERGY ↗</button></div>
+<section class="hero wrap">
+<div><div class="eyebrow">A field guide to the invisible</div><h1>Meet the universe's<br><em>darkest mystery.</em></h1><p class="lead">A black hole is a region of space where gravity is so strong that, beyond a boundary called the event horizon, nothing—not even light—can escape. Explore how these cosmic objects form, what lies around them, and how scientists study something they cannot see directly.</p><div class="actions"><a class="btn primary" href="#basics">Start exploring ↓</a><button class="btn" id="motion-toggle" type="button">Pause space animation</button></div>
+<div class="stats"><div class="stat"><strong>c ≈ 300,000</strong><span>kilometres per second — speed of light</span></div><div class="stat"><strong>4 million+</strong><span>solar masses, roughly, for Sagittarius A*</span></div><div class="stat"><strong>2019</strong><span>first image of a black hole's shadow released</span></div></div>
+</div></section>
+<section class="section wrap" id="basics"><div class="section-head"><div class="eyebrow">01 / The basics</div><h2>What actually is a black hole?</h2><p>It is not a cosmic vacuum cleaner roaming around space. From far away, its gravity behaves like the gravity of any other object with the same mass. The strange part happens when matter gets extremely compact.</p></div><div class="grid">
+<article class="card"><div class="num">01 — GRAVITY</div><h3>Space-time bends</h3><p>In Einstein's theory of general relativity, mass and energy curve space-time. A black hole is a region where that curvature creates a one-way boundary.</p></article>
+<article class="card"><div class="num">02 — THE BOUNDARY</div><h3>The event horizon</h3><p>This is the point of no return. It is not a solid surface; crossing it means every possible future path leads deeper inward.</p></article>
+<article class="card"><div class="num">03 — THE SHADOW</div><h3>Why it looks dark</h3><p>We cannot receive light from inside the horizon. Hot gas outside it can glow brilliantly, creating a bright ring around a dark central shadow.</p></article>
+</div><div class="callout"><strong>Important distinction:</strong> the bright ring seen in black-hole images is glowing material and lensed light around the black hole—not the event horizon itself.</div></section>
+<section class="section wrap" id="anatomy"><div class="section-head"><div class="eyebrow">02 / Anatomy</div><h2>Take a closer look</h2><p>Different parts of the system tell scientists different things about the black hole and its surroundings.</p></div><div class="two-col">
+<div class="factbox"><span class="type-label">THE CENTRAL REGION</span><h3>Horizon and interior</h3><ol class="steps"><li><strong>Event horizon:</strong> the boundary beyond which escape is impossible.</li><li><strong>Singularity (classical theory):</strong> general relativity predicts a breakdown of its equations at the centre. A complete quantum-gravity description remains unknown.</li><li><strong>Spin:</strong> real black holes can rotate, affecting nearby space-time and the motion of surrounding matter.</li></ol></div>
+<div class="factbox"><span class="type-label">THE VISIBLE ENVIRONMENT</span><h3>Gas, light and jets</h3><ol class="steps"><li><strong>Accretion disk:</strong> gas and dust heat up as they orbit and fall inward, sometimes becoming extremely bright.</li><li><strong>Gravitational lensing:</strong> gravity bends light, letting us see distorted views of material behind the black hole.</li><li><strong>Jets:</strong> some systems launch powerful particle streams from the region around the black hole, guided by magnetic fields.</li></ol></div></div></section>
+<section class="section wrap" id="types"><div class="section-head"><div class="eyebrow">03 / Cosmic scale</div><h2>Black holes come in different sizes</h2><p>Scientists classify them mainly by mass. The details of how the largest ones formed are still being investigated.</p></div><div class="grid">
+<article class="card"><span class="type-label">STELLAR-MASS</span><h3>Born from stars</h3><p>Form when the core of a sufficiently massive star collapses at the end of its life. They typically have a few to many tens of times the Sun's mass.</p></article>
+<article class="card"><span class="type-label">INTERMEDIATE</span><h3>The middleweights</h3><p>These have hundreds to hundreds of thousands of solar masses. Evidence exists for candidates, but their origin and population remain active research topics.</p></article>
+<article class="card"><span class="type-label">SUPERMASSIVE</span><h3>Galactic giants</h3><p>Millions to billions of solar masses. Many large galaxies host one; Sagittarius A* sits at the centre of our Milky Way.</p></article>
+</div></section>
+<section class="section wrap" id="discoveries"><div class="section-head"><div class="eyebrow">04 / How we know</div><h2>Discoveries that changed astronomy</h2><p>Black holes are detected through their effects on nearby matter, light, and space-time—not by seeing light escape from inside them.</p></div><div class="timeline">
+<article class="card"><strong>2015</strong><h3>Gravitational waves</h3><p>LIGO detected ripples in space-time from two merging black holes, opening a new way to observe the universe.</p></article>
+<article class="card"><strong>2019</strong><h3>First black-hole image</h3><p>The Event Horizon Telescope collaboration released an image of the shadow of the supermassive black hole in galaxy M87.</p></article>
+<article class="card"><strong>2022</strong><h3>Our galaxy's black hole</h3><p>The Event Horizon Telescope collaboration released an image of Sagittarius A*, the black hole at the centre of the Milky Way.</p></article>
+</div><p class="small">These are milestones, not the only ways black holes are studied. Astronomers also track stars orbiting invisible massive objects and observe X-rays from hot gas.</p></section>
+<section class="section wrap"><div class="section-head"><div class="eyebrow">05 / Myth check</div><h2>Fact or fiction?</h2></div><div class="two-col"><div class="factbox"><h3>“Black holes suck everything in.”</h3><p>Fiction. At a safe distance, an object can orbit a black hole just as it could orbit another object of the same mass. You must get very close for the extreme effects to dominate.</p></div><div class="factbox"><h3>“We can study them without seeing inside.”</h3><p>Fact. Their influence on stars, hot gas, gravitational waves, and light gives us powerful evidence about their mass, spin, and surroundings.</p></div><div class="factbox"><h3>“They are holes through space.”</h3><p>Not in the usual sense. The name describes a region from which light cannot escape, not an empty tunnel with a known destination.</p></div><div class="factbox"><h3>“Time behaves normally near one.”</h3><p>Not quite. Strong gravity affects how time is measured by observers in different locations; this is a prediction of general relativity.</p></div></div></section>
+<section class="section wrap" id="quiz"><div class="section-head"><div class="eyebrow">06 / Test your knowledge</div><h2>One quick space quiz</h2><p>Choose the best answer. You can try again whenever you want.</p></div><div class="quiz"><h3>What is the event horizon?</h3><div class="answers"><button class="answer" data-correct="false">A solid surface</button><button class="answer" data-correct="true">A boundary beyond which light cannot escape</button><button class="answer" data-correct="false">The bright gas ring only</button></div><div id="quiz-result" role="status" aria-live="polite"></div></div></section>
+<section class="section wrap"><div class="section-head"><div class="eyebrow">07 / Curious minds</div><h2>Questions people often ask</h2></div><div class="faq"><details><summary>Would the Sun become a black hole?</summary><p>No. The Sun does not have enough mass to collapse into a black hole at the end of its life. It is expected to become a white dwarf after its giant phases.</p></details><details><summary>Can scientists see a black hole directly?</summary><p>They can image the black hole's shadow against glowing surrounding material, and measure its effects. The event horizon itself does not emit light for us to see.</p></details><details><summary>What would happen to someone falling in?</summary><p>The experience would depend on the black hole's mass and the path taken. Differences in gravity across an object can stretch it—a process nicknamed “spaghettification.” This is a theoretical explanation, not a safe or survivable journey.</p></details><details><summary>Do black holes last forever?</summary><p>According to theoretical predictions, black holes can very slowly lose energy through Hawking radiation. For astrophysical black holes, this process would take far longer than the current age of the universe.</p></details></div></section>
 </main>
-<div class="bottom"><div>EVENT HORIZON // VISUAL STUDY</div><div class="hint">Move your pointer to bend the light</div><a class="back" href="./index.html">← BACK TO PORTFOLIO</a></div>
+<footer><div class="wrap footrow"><span>EVENT HORIZON · An interactive black-hole guide</span><span>Made for curious minds · <a href="./index.html">Back to portfolio ↗</a></span></div><div class="wrap small">Educational overview. Scientific understanding continues to develop; unresolved topics are labelled as such.</div></footer>
 </div>
 <script>
-(() => {
-  const canvas = document.getElementById('space');
-  const ctx = canvas.getContext('2d');
-  const toggle = document.getElementById('toggle');
-  const burst = document.getElementById('burst');
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let w=0,h=0,dpr=1,frame=0,running=!reduced,pulse=0,stars=[],pointer={x:.5,y:.5};
-  const rand=(a,b)=>a+Math.random()*(b-a);
-  function resize(){
-    dpr=Math.min(window.devicePixelRatio||1,2); w=innerWidth; h=innerHeight;
-    canvas.width=Math.floor(w*dpr);canvas.height=Math.floor(h*dpr);
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-    stars=Array.from({length:Math.min(260,Math.floor(w*h/5000))},()=>({x:Math.random()*w,y:Math.random()*h,r:rand(.35,1.5),a:rand(.2,.9),phase:rand(0,Math.PI*2)}));
-  }
-  function glow(x,y,r,color,blur){ctx.save();ctx.shadowBlur=blur;ctx.shadowColor=color;ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();ctx.restore();}
-  function draw(){
-    frame+=running?0.009:0;
-    pulse*=.965;
-    ctx.clearRect(0,0,w,h);
-    const bg=ctx.createRadialGradient(w*.72,h*.52,0,w*.55,h*.5,Math.max(w,h)*.85);
-    bg.addColorStop(0,'#11152c');bg.addColorStop(.48,'#080a1b');bg.addColorStop(1,'#03040c');
-    ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
-    for(const s of stars){ctx.globalAlpha=s.a*(.65+.35*Math.sin(frame*1.4+s.phase));ctx.fillStyle='#dbe5ff';ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();}
-    ctx.globalAlpha=1;
-    const cx=w*(.68+(pointer.x-.5)*.045), cy=h*(.52+(pointer.y-.5)*.045);
-    const scale=Math.min(w,h)*.27, rx=scale*1.28, ry=scale*.38;
-    // Diffuse halo
-    const halo=ctx.createRadialGradient(cx,cy,scale*.25,cx,cy,scale*1.65);
-    halo.addColorStop(0,'#000000');halo.addColorStop(.27,'#090b1a');halo.addColorStop(.43,'#27204b99');halo.addColorStop(.58,'#ff9d5544');halo.addColorStop(.72,'#7d5cff14');halo.addColorStop(1,'#00000000');
-    ctx.fillStyle=halo;ctx.beginPath();ctx.arc(cx,cy,scale*1.65,0,Math.PI*2);ctx.fill();
-    // Accretion disk, multiple luminous elliptical layers
-    ctx.save();ctx.translate(cx,cy);ctx.rotate(-.12+Math.sin(frame*.4)*.025);
-    for(let i=0;i<9;i++){
-      const t=i/8;ctx.beginPath();ctx.ellipse(0,0,rx*(.58+t*.68),ry*(.5+t*.7),0,Math.PI*(.05+t*.025),Math.PI*(1.02+t*.02));
-      ctx.strokeStyle=i%2?'rgba(124,190,255,'+(0.08+t*.15)+')':'rgba(255,'+Math.floor(120+80*(1-t))+',90,'+(0.12+t*.16)+')';
-      ctx.lineWidth=1+t*4+pulse*3;ctx.shadowBlur=12+t*15;ctx.shadowColor=i%2?'#6faaff':'#ff8a4d';ctx.stroke();
-    }
-    // Bright front edge
-    ctx.beginPath();ctx.ellipse(0,0,rx*1.02,ry*.84,0,Math.PI*.04,Math.PI*.96);
-    const disk=ctx.createLinearGradient(-rx,-ry,rx,ry);disk.addColorStop(0,'#7df9ff');disk.addColorStop(.32,'#c6a0ff');disk.addColorStop(.58,'#ffcb82');disk.addColorStop(1,'#ff6b75');
-    ctx.strokeStyle=disk;ctx.lineWidth=2.5+pulse*5;ctx.shadowBlur=25+pulse*22;ctx.shadowColor='#ff9a6b';ctx.stroke();
-    // Far side disk behind the shadow
-    ctx.beginPath();ctx.ellipse(0,0,rx*.96,ry*.75,0,Math.PI*1.03,Math.PI*1.98);ctx.strokeStyle='#8aa5ff99';ctx.lineWidth=3;ctx.shadowBlur=18;ctx.shadowColor='#a78bfa';ctx.stroke();
-    ctx.restore();
-    // Event horizon and thin photon ring
-    glow(cx,cy,scale*.37,'#020208',24);
-    ctx.beginPath();ctx.arc(cx,cy,scale*.405+pulse*2,0,Math.PI*2);ctx.strokeStyle='#ffe1b0';ctx.lineWidth=1.7+pulse*2;ctx.shadowBlur=22+pulse*18;ctx.shadowColor='#ffb76b';ctx.stroke();
-    const black=ctx.createRadialGradient(cx-scale*.1,cy-scale*.12,scale*.03,cx,cy,scale*.4);
-    black.addColorStop(0,'#000');black.addColorStop(.72,'#010107');black.addColorStop(1,'#070713');
-    ctx.fillStyle=black;ctx.beginPath();ctx.arc(cx,cy,scale*.39,0,Math.PI*2);ctx.fill();
-    // Orbiting light particles
-    for(let i=0;i<42;i++){
-      const a=frame*(.45+i%5*.09)+i*2.399, orbit=scale*(.52+(i%9)*.085);
-      const x=cx+Math.cos(a)*orbit*1.24,y=cy+Math.sin(a)*orbit*.38;
-      ctx.globalAlpha=.25+(i%7)/10;glow(x,y,i%5===0?2.2:1,'#b8d9ff',8);
-    }
-    ctx.globalAlpha=1;
-    if(running) requestAnimationFrame(draw);
-  }
-  function animate(){draw();}
-  toggle.addEventListener('click',()=>{running=!running;toggle.textContent=running?'PAUSE MOTION Ⅱ':'RESUME MOTION ▶';if(running)requestAnimationFrame(draw);});
-  burst.addEventListener('click',()=>{pulse=1;if(!running){running=true;toggle.textContent='PAUSE MOTION Ⅱ';requestAnimationFrame(draw);}});
-  window.addEventListener('pointermove',e=>{pointer.x=e.clientX/w;pointer.y=e.clientY/h;},{passive:true});
-  window.addEventListener('resize',resize);
-  resize();animate();
-})();
+(()=>{const canvas=document.getElementById('space'),ctx=canvas.getContext('2d');let w=0,h=0,dpr=1,stars=[],running=true,raf=0,t=0;const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function resize(){dpr=Math.min(devicePixelRatio||1,2);w=innerWidth;h=innerHeight;canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);stars=Array.from({length:Math.min(240,Math.floor(w*h/6500))},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.3+.2,a:Math.random()*.65+.15,p:Math.random()*6.28}));}
+function draw(){ctx.clearRect(0,0,w,h);for(const s of stars){const twinkle=.7+.3*Math.sin(t*.018+s.p);ctx.fillStyle='rgba(205,220,255,'+(s.a*twinkle)+')';ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill()}const x=w*.73,y=h*.48,R=Math.min(w,h)*.105;const glow=ctx.createRadialGradient(x,y,R*.4,x,y,R*2.8);glow.addColorStop(0,'rgba(3,4,15,1)');glow.addColorStop(.35,'rgba(3,4,15,.96)');glow.addColorStop(.52,'rgba(125,249,255,.07)');glow.addColorStop(.7,'rgba(151,94,255,.06)');glow.addColorStop(1,'rgba(3,4,15,0)');ctx.fillStyle=glow;ctx.beginPath();ctx.arc(x,y,R*2.8,0,Math.PI*2);ctx.fill();ctx.save();ctx.translate(x,y);ctx.rotate(-.18);for(let i=0;i<5;i++){ctx.beginPath();ctx.ellipse(0,0,R*(1.2+i*.12),R*(.24+i*.035),0,0,Math.PI*2);ctx.strokeStyle='rgba('+(i%2?'125,249,255':'174,137,255')+','+(0.22-i*.025)+')';ctx.lineWidth=2+i*.5;ctx.stroke()}ctx.restore();const hole=ctx.createRadialGradient(x-R*.18,y-R*.2,1,x,y,R);hole.addColorStop(0,'#000');hole.addColorStop(.82,'#01020a');hole.addColorStop(1,'rgba(125,249,255,.2)');ctx.fillStyle=hole;ctx.beginPath();ctx.arc(x,y,R,0,Math.PI*2);ctx.fill();if(running){t++;raf=requestAnimationFrame(draw)}}
+function start(){cancelAnimationFrame(raf);draw()}addEventListener('resize',()=>{resize();if(running)start()});resize();running=!reduced;const toggle=document.getElementById('motion-toggle');if(reduced)toggle.textContent='Enable space animation';toggle.addEventListener('click',()=>{running=!running;toggle.textContent=running?'Pause space animation':'Play space animation';if(running)start();else cancelAnimationFrame(raf)});document.querySelectorAll('.answer').forEach(b=>b.addEventListener('click',()=>{const out=document.getElementById('quiz-result');if(b.dataset.correct==='true'){out.textContent='Correct! It is the point-of-no-return boundary.'}else{out.textContent='Not quite—try again. It is a boundary, not a solid surface or simply the glowing ring.'}}));if(running)start();})();
 </script>
 </body>
 </html>
