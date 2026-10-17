@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#050611">
+<meta name="description" content="An interactive animated black hole, built with HTML canvas and JavaScript.">
+<title>Event Horizon — Black Hole Experience</title>
+<style>
+:root{color-scheme:dark;--cyan:#7df9ff;--violet:#a78bfa;--muted:#a7abc4}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#050611;color:#f7f7ff;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{overflow:hidden}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+.overlay{position:relative;z-index:1;min-height:100svh;padding:clamp(24px,5vw,72px);display:flex;flex-direction:column;justify-content:space-between;pointer-events:none}
+nav,.bottom,.controls,.back{pointer-events:auto}
+nav{display:flex;align-items:center;justify-content:space-between;gap:18px}
+.brand{font:600 12px/1.4 ui-monospace,monospace;letter-spacing:.22em;text-transform:uppercase;color:#e9eaff}
+.pill{border:1px solid #ffffff26;border-radius:999px;padding:9px 13px;color:#c8cbe2;font:11px ui-monospace,monospace;letter-spacing:.1em;background:#090b1c99;backdrop-filter:blur(12px)}
+main{max-width:560px;margin:auto 0; padding:48px 0}
+.kicker{font:11px ui-monospace,monospace;letter-spacing:.28em;color:var(--cyan);text-transform:uppercase}
+h1{font-size:clamp(48px,9vw,108px);line-height:.88;letter-spacing:-.075em;margin:22px 0 26px;font-weight:650}
+h1 span{display:block;background:linear-gradient(100deg,#fff 10%,#b7c7ff 48%,#f6a6ff 85%);background-clip:text;-webkit-background-clip:text;color:transparent}
+p{color:var(--muted);font-size:clamp(14px,1.5vw,17px);line-height:1.8;max-width:420px}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:28px}
+button{cursor:pointer;border:1px solid #ffffff35;border-radius:999px;background:#ffffff0c;color:#fff;padding:12px 17px;font:12px ui-monospace,monospace;letter-spacing:.08em;transition:background .2s,border-color .2s}
+button:hover{background:#7df9ff1a;border-color:#7df9ff99}
+button:focus-visible,a:focus-visible{outline:2px solid var(--cyan);outline-offset:4px}
+.bottom{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;color:#898da9;font:10px ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase}
+.bottom a{color:#cbd0f0;text-decoration:none}
+.hint{color:#777d9c}
+@media(max-width:600px){.overlay{padding:22px}main{margin:auto 0;padding:30px 0}.bottom{font-size:9px}.hint{max-width:130px;text-align:right}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<canvas id="space" aria-label="Animated black hole with glowing accretion rings and distant stars"></canvas>
+<div class="overlay">
+<nav><div class="brand">M1RABT / COSMIC LAB</div><div class="pill">SIMULATION 001 · LIVE</div></nav>
+<main>
+<div class="kicker">Beyond the event horizon</div>
+<h1>Nothing<br>escapes<span>gravity.</span></h1>
+<p>A tiny interactive journey into the strange beauty of a black hole. Watch light orbit the darkness, bend around the horizon, and disappear beyond the edge.</p>
+<div class="controls"><button id="toggle" type="button">PAUSE MOTION Ⅱ</button><button id="burst" type="button">PULSE ENERGY ↗</button></div>
+</main>
+<div class="bottom"><div>EVENT HORIZON // VISUAL STUDY</div><div class="hint">Move your pointer to bend the light</div><a class="back" href="./index.html">← BACK TO PORTFOLIO</a></div>
+</div>
+<script>
+(() => {
+  const canvas = document.getElementById('space');
+  const ctx = canvas.getContext('2d');
+  const toggle = document.getElementById('toggle');
+  const burst = document.getElementById('burst');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let w=0,h=0,dpr=1,frame=0,running=!reduced,pulse=0,stars=[],pointer={x:.5,y:.5};
+  const rand=(a,b)=>a+Math.random()*(b-a);
+  function resize(){
+    dpr=Math.min(window.devicePixelRatio||1,2); w=innerWidth; h=innerHeight;
+    canvas.width=Math.floor(w*dpr);canvas.height=Math.floor(h*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    stars=Array.from({length:Math.min(260,Math.floor(w*h/5000))},()=>({x:Math.random()*w,y:Math.random()*h,r:rand(.35,1.5),a:rand(.2,.9),phase:rand(0,Math.PI*2)}));
+  }
+  function glow(x,y,r,color,blur){ctx.save();ctx.shadowBlur=blur;ctx.shadowColor=color;ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();ctx.restore();}
+  function draw(){
+    frame+=running?0.009:0;
+    pulse*=.965;
+    ctx.clearRect(0,0,w,h);
+    const bg=ctx.createRadialGradient(w*.72,h*.52,0,w*.55,h*.5,Math.max(w,h)*.85);
+    bg.addColorStop(0,'#11152c');bg.addColorStop(.48,'#080a1b');bg.addColorStop(1,'#03040c');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+    for(const s of stars){ctx.globalAlpha=s.a*(.65+.35*Math.sin(frame*1.4+s.phase));ctx.fillStyle='#dbe5ff';ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();}
+    ctx.globalAlpha=1;
+    const cx=w*(.68+(pointer.x-.5)*.045), cy=h*(.52+(pointer.y-.5)*.045);
+    const scale=Math.min(w,h)*.27, rx=scale*1.28, ry=scale*.38;
+    // Diffuse halo
+    const halo=ctx.createRadialGradient(cx,cy,scale*.25,cx,cy,scale*1.65);
+    halo.addColorStop(0,'#000000');halo.addColorStop(.27,'#090b1a');halo.addColorStop(.43,'#27204b99');halo.addColorStop(.58,'#ff9d5544');halo.addColorStop(.72,'#7d5cff14');halo.addColorStop(1,'#00000000');
+    ctx.fillStyle=halo;ctx.beginPath();ctx.arc(cx,cy,scale*1.65,0,Math.PI*2);ctx.fill();
+    // Accretion disk, multiple luminous elliptical layers
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(-.12+Math.sin(frame*.4)*.025);
+    for(let i=0;i<9;i++){
+      const t=i/8;ctx.beginPath();ctx.ellipse(0,0,rx*(.58+t*.68),ry*(.5+t*.7),0,Math.PI*(.05+t*.025),Math.PI*(1.02+t*.02));
+      ctx.strokeStyle=i%2?'rgba(124,190,255,'+(0.08+t*.15)+')':'rgba(255,'+Math.floor(120+80*(1-t))+',90,'+(0.12+t*.16)+')';
+      ctx.lineWidth=1+t*4+pulse*3;ctx.shadowBlur=12+t*15;ctx.shadowColor=i%2?'#6faaff':'#ff8a4d';ctx.stroke();
+    }
+    // Bright front edge
+    ctx.beginPath();ctx.ellipse(0,0,rx*1.02,ry*.84,0,Math.PI*.04,Math.PI*.96);
+    const disk=ctx.createLinearGradient(-rx,-ry,rx,ry);disk.addColorStop(0,'#7df9ff');disk.addColorStop(.32,'#c6a0ff');disk.addColorStop(.58,'#ffcb82');disk.addColorStop(1,'#ff6b75');
+    ctx.strokeStyle=disk;ctx.lineWidth=2.5+pulse*5;ctx.shadowBlur=25+pulse*22;ctx.shadowColor='#ff9a6b';ctx.stroke();
+    // Far side disk behind the shadow
+    ctx.beginPath();ctx.ellipse(0,0,rx*.96,ry*.75,0,Math.PI*1.03,Math.PI*1.98);ctx.strokeStyle='#8aa5ff99';ctx.lineWidth=3;ctx.shadowBlur=18;ctx.shadowColor='#a78bfa';ctx.stroke();
+    ctx.restore();
+    // Event horizon and thin photon ring
+    glow(cx,cy,scale*.37,'#020208',24);
+    ctx.beginPath();ctx.arc(cx,cy,scale*.405+pulse*2,0,Math.PI*2);ctx.strokeStyle='#ffe1b0';ctx.lineWidth=1.7+pulse*2;ctx.shadowBlur=22+pulse*18;ctx.shadowColor='#ffb76b';ctx.stroke();
+    const black=ctx.createRadialGradient(cx-scale*.1,cy-scale*.12,scale*.03,cx,cy,scale*.4);
+    black.addColorStop(0,'#000');black.addColorStop(.72,'#010107');black.addColorStop(1,'#070713');
+    ctx.fillStyle=black;ctx.beginPath();ctx.arc(cx,cy,scale*.39,0,Math.PI*2);ctx.fill();
+    // Orbiting light particles
+    for(let i=0;i<42;i++){
+      const a=frame*(.45+i%5*.09)+i*2.399, orbit=scale*(.52+(i%9)*.085);
+      const x=cx+Math.cos(a)*orbit*1.24,y=cy+Math.sin(a)*orbit*.38;
+      ctx.globalAlpha=.25+(i%7)/10;glow(x,y,i%5===0?2.2:1,'#b8d9ff',8);
+    }
+    ctx.globalAlpha=1;
+    if(running) requestAnimationFrame(draw);
+  }
+  function animate(){draw();}
+  toggle.addEventListener('click',()=>{running=!running;toggle.textContent=running?'PAUSE MOTION Ⅱ':'RESUME MOTION ▶';if(running)requestAnimationFrame(draw);});
+  burst.addEventListener('click',()=>{pulse=1;if(!running){running=true;toggle.textContent='PAUSE MOTION Ⅱ';requestAnimationFrame(draw);}});
+  window.addEventListener('pointermove',e=>{pointer.x=e.clientX/w;pointer.y=e.clientY/h;},{passive:true});
+  window.addEventListener('resize',resize);
+  resize();animate();
+})();
+</script>
+</body>
+</html>
